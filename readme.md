@@ -1,5 +1,7 @@
 基于frida的go绑定,只负责绑定，文档参 http://frida.re 打不开的记得翻墙
 
+此项目目前仅仅支持win x64
+
 install
 
 示例项目:https://github.com/a97077088/fridadebug
