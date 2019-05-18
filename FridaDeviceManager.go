@@ -69,6 +69,9 @@ func (this *FridaDeviceManager) GetUsbDevice() (*FridaDevice, error) {
 			break
 		}
 	}
+	if r == nil {
+		return nil, errors.New("没有找到usb设备")
+	}
 	return r, nil
 }
 
