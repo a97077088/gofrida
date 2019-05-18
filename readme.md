@@ -1,8 +1,8 @@
 基于frida的go绑定,只负责绑定，文档参 http://frida.re 打不开的记得翻墙
 
 install
-                
-go get github.com/a97077088/gofrida
+
+go get github.com/a97077088/gofrida/cmd..
 
 1.go get 安装
 

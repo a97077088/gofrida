@@ -4,16 +4,17 @@ package gofrida
 import "C"
 import (
 	"errors"
+	"fmt"
 )
 
 type FridaDeviceManager struct{
 	ptr uintptr
 }
+var DefaultDeviceManager *FridaDeviceManager
 func FridaDeviceManagerFormPtr(_ptr uintptr)*FridaDeviceManager{
 	return &FridaDeviceManager{_ptr}
 }
 func NewFridaDeviceManager()*FridaDeviceManager{
-	frida_init()
 	return frida_device_manager_new()
 }
 func (this* FridaDeviceManager)CPtr()uintptr{
@@ -54,4 +55,21 @@ func (this* FridaDeviceManager) EnumDevice()([]*FridaDevice,error){
 		r=append(r,d)
 	}
 	return r,nil
+}
+
+func (this* FridaDeviceManager) GetUsbDevice()(*FridaDevice,error){
+	ds,err:=this.EnumDevice()
+	if err!=nil{
+		return nil,err
+	}
+	for _,d :=range ds{
+		fmt.Println(d.Type==FRIDA_DEVICE_TYPE_LOCAL)
+	}
+	return nil,nil
+}
+
+//直接初始化devicemanager 好像没必要释放他
+func init(){
+	frida_init()
+	DefaultDeviceManager=NewFridaDeviceManager()
 }
