@@ -2,11 +2,11 @@
 
 install
 
-go get github.com/a97077088/gofrida/cmd..
 
-1.go get 安装
 
-2.新建项目，并拷贝frida.dll到项目目录
+1. go get github.com/a97077088/gofrida
+
+2.新建项目，并拷贝bin/frida.dll bin/vcruntime140.dll到项目目录
 
 3.运行frida的api例子
 
