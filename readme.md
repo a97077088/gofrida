@@ -2,7 +2,7 @@
 
 install
 
-
+示例项目:https://github.com/a97077088/fridadebug
 
 1. go get github.com/a97077088/gofrida
 
