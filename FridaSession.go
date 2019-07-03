@@ -29,7 +29,12 @@ func (this* FridaSession)Create_Script_with_path(_scriptpath string)(*FridaScrip
 }
 func (this* FridaSession)Create_Script_with_name_script(_scriptname string,_script string)(*FridaScript,error){
 	var gerr *GError
-	sc:=frida_session_create_script_sync(this,_scriptname,_script,&gerr)
+	opt:=frida_script_options_new()
+	frida_script_options_set_name(opt,_scriptname)
+	frida_script_options_set_runtime(opt,FRIDA_SCRIPT_RUNTIME_V8)
+	defer g_clear_object(&opt.ptr)  //暂时不知道咋释放
+
+	sc:=frida_session_create_script_sync(this,_script,opt,&gerr)
 	if gerr!=nil{
 		return nil,errors.New(gerr.Message())
 	}

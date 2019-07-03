@@ -27,6 +27,7 @@ var CL_g_main_loop_run=CL_Dll.NewProc("g_main_loop_run")
 var CL_g_main_loop_is_running=CL_Dll.NewProc("g_main_loop_is_running")
 var CL_g_signal_connect_data=CL_Dll.NewProc("g_signal_connect_data")
 var CL_g_bytes_get_type=CL_Dll.NewProc("g_bytes_get_type")
+var CL_g_clear_object=CL_Dll.NewProc("g_clear_object")
 var CL_g_bytes_icon_get_type=CL_Dll.NewProc("g_bytes_icon_get_type")
 var CL_g_bytes_icon_new=CL_Dll.NewProc("g_bytes_icon_new")
 var CL_g_bytes_icon_get_bytes=CL_Dll.NewProc("g_bytes_icon_get_bytes")
@@ -227,6 +228,11 @@ var CL_frida_script_eternalize_sync=CL_Dll.NewProc("frida_script_eternalize_sync
 var CL_frida_script_post=CL_Dll.NewProc("frida_script_post")
 var CL_frida_script_post_finish=CL_Dll.NewProc("frida_script_post_finish")
 var CL_frida_script_post_sync=CL_Dll.NewProc("frida_script_post_sync")
+var CL_frida_script_options_new=CL_Dll.NewProc("frida_script_options_new")
+var CL_frida_script_options_get_name=CL_Dll.NewProc("frida_script_options_get_name")
+var CL_frida_script_options_get_runtime=CL_Dll.NewProc("frida_script_options_get_runtime")
+var CL_frida_script_options_set_name=CL_Dll.NewProc("frida_script_options_set_name")
+var CL_frida_script_options_set_runtime=CL_Dll.NewProc("frida_script_options_set_runtime")
 var CL_frida_injector_new=CL_Dll.NewProc("frida_injector_new")
 var CL_frida_injector_new_inprocess=CL_Dll.NewProc("frida_injector_new_inprocess")
 var CL_frida_injector_close=CL_Dll.NewProc("frida_injector_close")
@@ -255,6 +261,7 @@ var CL_frida_file_monitor_disable_sync=CL_Dll.NewProc("frida_file_monitor_disabl
 var CL_frida_error_quark=CL_Dll.NewProc("frida_error_quark")
 var CL_frida_device_type_get_type=CL_Dll.NewProc("frida_device_type_get_type")
 var CL_frida_child_origin_get_type=CL_Dll.NewProc("frida_child_origin_get_type")
+var CL_frida_script_runtime_get_type=CL_Dll.NewProc("frida_script_runtime_get_type")
 var CL_frida_session_detach_reason_get_type=CL_Dll.NewProc("frida_session_detach_reason_get_type")
 var CL_frida_stdio_get_type=CL_Dll.NewProc("frida_stdio_get_type")
 var CL_frida_unload_policy_get_type=CL_Dll.NewProc("frida_unload_policy_get_type")
@@ -274,6 +281,7 @@ var CL_frida_crash_get_type=CL_Dll.NewProc("frida_crash_get_type")
 var CL_frida_icon_get_type=CL_Dll.NewProc("frida_icon_get_type")
 var CL_frida_session_get_type=CL_Dll.NewProc("frida_session_get_type")
 var CL_frida_script_get_type=CL_Dll.NewProc("frida_script_get_type")
+var CL_frida_script_options_get_type=CL_Dll.NewProc("frida_script_options_get_type")
 var CL_frida_injector_get_type=CL_Dll.NewProc("frida_injector_get_type")
 var CL_frida_file_monitor_get_type=CL_Dll.NewProc("frida_file_monitor_get_type")
 
@@ -370,6 +378,11 @@ func g_signal_connect_data( _instance uintptr, _detailed_signal string, _c_handl
 func g_bytes_get_type()GType{
     r,_,_:=CL_g_bytes_get_type.Call()
     return GType(r)
+}
+
+func g_clear_object( _object_ptr *uintptr,){
+    CL_g_clear_object.Call(uintptr(unsafe.Pointer(_object_ptr)),)
+    
 }
 
 func g_bytes_icon_get_type()GType{
@@ -1212,8 +1225,8 @@ func frida_session_disable_child_gating_sync( _self * FridaSession, _error ** GE
     
 }
 
-func frida_session_create_script( _self * FridaSession, _name string, _source string, _callback GAsyncReadyCallback, _user_data uintptr,){
-    CL_frida_session_create_script.Call(CObjPtr(_self),uintptr(unsafe.Pointer(syscall.StringBytePtr(_name))),uintptr(unsafe.Pointer(syscall.StringBytePtr(_source))),uintptr(unsafe.Pointer(_callback)),uintptr(int(_user_data)),)
+func frida_session_create_script( _self * FridaSession, _source string, _options * FridaScriptOptions, _callback GAsyncReadyCallback, _user_data uintptr,){
+    CL_frida_session_create_script.Call(CObjPtr(_self),uintptr(unsafe.Pointer(syscall.StringBytePtr(_source))),CObjPtr(_options),uintptr(unsafe.Pointer(_callback)),uintptr(int(_user_data)),)
     
 }
 
@@ -1222,13 +1235,13 @@ func frida_session_create_script_finish( _self * FridaSession, _result * GAsyncR
     return FridaScriptFormPtr(r)
 }
 
-func frida_session_create_script_sync( _self * FridaSession, _name string, _source string, _error ** GError,)* FridaScript{
-    r,_,_:=CL_frida_session_create_script_sync.Call(CObjPtr(_self),uintptr(unsafe.Pointer(syscall.StringBytePtr(_name))),uintptr(unsafe.Pointer(syscall.StringBytePtr(_source))),uintptr(unsafe.Pointer(_error)),)
+func frida_session_create_script_sync( _self * FridaSession, _source string, _options * FridaScriptOptions, _error ** GError,)* FridaScript{
+    r,_,_:=CL_frida_session_create_script_sync.Call(CObjPtr(_self),uintptr(unsafe.Pointer(syscall.StringBytePtr(_source))),CObjPtr(_options),uintptr(unsafe.Pointer(_error)),)
     return FridaScriptFormPtr(r)
 }
 
-func frida_session_create_script_from_bytes( _self * FridaSession, _bytes uintptr, _callback GAsyncReadyCallback, _user_data uintptr,){
-    CL_frida_session_create_script_from_bytes.Call(CObjPtr(_self),uintptr(int(_bytes)),uintptr(unsafe.Pointer(_callback)),uintptr(int(_user_data)),)
+func frida_session_create_script_from_bytes( _self * FridaSession, _bytes uintptr, _options * FridaScriptOptions, _callback GAsyncReadyCallback, _user_data uintptr,){
+    CL_frida_session_create_script_from_bytes.Call(CObjPtr(_self),uintptr(int(_bytes)),CObjPtr(_options),uintptr(unsafe.Pointer(_callback)),uintptr(int(_user_data)),)
     
 }
 
@@ -1237,13 +1250,13 @@ func frida_session_create_script_from_bytes_finish( _self * FridaSession, _resul
     return FridaScriptFormPtr(r)
 }
 
-func frida_session_create_script_from_bytes_sync( _self * FridaSession, _bytes uintptr, _error ** GError,)* FridaScript{
-    r,_,_:=CL_frida_session_create_script_from_bytes_sync.Call(CObjPtr(_self),uintptr(int(_bytes)),uintptr(unsafe.Pointer(_error)),)
+func frida_session_create_script_from_bytes_sync( _self * FridaSession, _bytes uintptr, _options * FridaScriptOptions, _error ** GError,)* FridaScript{
+    r,_,_:=CL_frida_session_create_script_from_bytes_sync.Call(CObjPtr(_self),uintptr(int(_bytes)),CObjPtr(_options),uintptr(unsafe.Pointer(_error)),)
     return FridaScriptFormPtr(r)
 }
 
-func frida_session_compile_script( _self * FridaSession, _name string, _source string, _callback GAsyncReadyCallback, _user_data uintptr,){
-    CL_frida_session_compile_script.Call(CObjPtr(_self),uintptr(unsafe.Pointer(syscall.StringBytePtr(_name))),uintptr(unsafe.Pointer(syscall.StringBytePtr(_source))),uintptr(unsafe.Pointer(_callback)),uintptr(int(_user_data)),)
+func frida_session_compile_script( _self * FridaSession, _source string, _options * FridaScriptOptions, _callback GAsyncReadyCallback, _user_data uintptr,){
+    CL_frida_session_compile_script.Call(CObjPtr(_self),uintptr(unsafe.Pointer(syscall.StringBytePtr(_source))),CObjPtr(_options),uintptr(unsafe.Pointer(_callback)),uintptr(int(_user_data)),)
     
 }
 
@@ -1252,8 +1265,8 @@ func frida_session_compile_script_finish( _self * FridaSession, _result * GAsync
     return uintptr(r)
 }
 
-func frida_session_compile_script_sync( _self * FridaSession, _name string, _source string, _error ** GError,)uintptr{
-    r,_,_:=CL_frida_session_compile_script_sync.Call(CObjPtr(_self),uintptr(unsafe.Pointer(syscall.StringBytePtr(_name))),uintptr(unsafe.Pointer(syscall.StringBytePtr(_source))),uintptr(unsafe.Pointer(_error)),)
+func frida_session_compile_script_sync( _self * FridaSession, _source string, _options * FridaScriptOptions, _error ** GError,)uintptr{
+    r,_,_:=CL_frida_session_compile_script_sync.Call(CObjPtr(_self),uintptr(unsafe.Pointer(syscall.StringBytePtr(_source))),CObjPtr(_options),uintptr(unsafe.Pointer(_error)),)
     return uintptr(r)
 }
 
@@ -1369,6 +1382,31 @@ func frida_script_post_finish( _self * FridaScript, _result * GAsyncResult, _err
 
 func frida_script_post_sync( _self * FridaScript, _message string, _data uintptr, _error ** GError,){
     CL_frida_script_post_sync.Call(CObjPtr(_self),uintptr(unsafe.Pointer(syscall.StringBytePtr(_message))),uintptr(int(_data)),uintptr(unsafe.Pointer(_error)),)
+    
+}
+
+func frida_script_options_new()* FridaScriptOptions{
+    r,_,_:=CL_frida_script_options_new.Call()
+    return FridaScriptOptionsFormPtr(r)
+}
+
+func frida_script_options_get_name( _self * FridaScriptOptions,)string{
+    r,_,_:=CL_frida_script_options_get_name.Call(CObjPtr(_self),)
+    return C.GoString((*C.char)(unsafe.Pointer(r)))
+}
+
+func frida_script_options_get_runtime( _self * FridaScriptOptions,)FridaScriptRuntime{
+    r,_,_:=CL_frida_script_options_get_runtime.Call(CObjPtr(_self),)
+    return FridaScriptRuntime(r)
+}
+
+func frida_script_options_set_name( _self * FridaScriptOptions, _value string,){
+    CL_frida_script_options_set_name.Call(CObjPtr(_self),uintptr(unsafe.Pointer(syscall.StringBytePtr(_value))),)
+    
+}
+
+func frida_script_options_set_runtime( _self * FridaScriptOptions, _value FridaScriptRuntime,){
+    CL_frida_script_options_set_runtime.Call(CObjPtr(_self),uintptr(int(_value)),)
     
 }
 
@@ -1512,6 +1550,11 @@ func frida_child_origin_get_type()GType{
     return GType(r)
 }
 
+func frida_script_runtime_get_type()GType{
+    r,_,_:=CL_frida_script_runtime_get_type.Call()
+    return GType(r)
+}
+
 func frida_session_detach_reason_get_type()GType{
     r,_,_:=CL_frida_session_detach_reason_get_type.Call()
     return GType(r)
@@ -1604,6 +1647,11 @@ func frida_session_get_type()GType{
 
 func frida_script_get_type()GType{
     r,_,_:=CL_frida_script_get_type.Call()
+    return GType(r)
+}
+
+func frida_script_options_get_type()GType{
+    r,_,_:=CL_frida_script_options_get_type.Call()
     return GType(r)
 }
 

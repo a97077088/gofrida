@@ -43,6 +43,7 @@ funcs=[
     "frida_device_manager_close_sync",
     "frida_unref",
     "frida_script_post_sync",
+    "g_clear_object",
 ]
 
 depstruct=[
@@ -137,6 +138,8 @@ def convert_type(_type:str):
     result=result.replace("__LineNo ","")
     if result=="void":
         result=""
+    elif result=="GObject **":
+        result="*uintptr"
     elif result=="gint":
         result="int"
     elif result=="guint":
@@ -231,6 +234,8 @@ def build_callarg(_argname,_argtype):
         result ="uintptr(unsafe.Pointer({}))".format(_argname)
     elif _argtype=="*int":
         result ="uintptr(unsafe.Pointer({}))".format(_argname)
+    elif _argtype=="*uintptr":
+        result ="uintptr(unsafe.Pointer({}))".format(_argname)
     else:
         result="uintptr(int({}))".format(_argname)
         #result="uintptr(unsafe.Pointer(C.{}({})))".format(_argtype,_argname)
@@ -245,7 +250,7 @@ def genCallloader(node:Cursor,_f):
 
 
 def genCallHead(node,_f):
-    _f.writelines("package main\n")
+    _f.writelines("package gofrida\n")
     _f.writelines("\n\n")
     _f.write("import \"C\"\n")
     _f.writelines("import (\n")

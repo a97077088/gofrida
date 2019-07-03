@@ -49945,6 +49945,7 @@ typedef struct _FridaCrash FridaCrash;
 typedef struct _FridaIcon FridaIcon;
 typedef struct _FridaSession FridaSession;
 typedef struct _FridaScript FridaScript;
+typedef struct _FridaScriptOptions FridaScriptOptions;
 typedef struct _FridaInjector FridaInjector;
 typedef struct _FridaFileMonitor FridaFileMonitor;
 
@@ -49959,6 +49960,12 @@ typedef enum {
   FRIDA_CHILD_ORIGIN_EXEC,
   FRIDA_CHILD_ORIGIN_SPAWN
 } FridaChildOrigin;
+
+typedef enum {
+  FRIDA_SCRIPT_RUNTIME_DEFAULT,
+  FRIDA_SCRIPT_RUNTIME_DUK,
+  FRIDA_SCRIPT_RUNTIME_V8
+} FridaScriptRuntime;
 
 typedef enum {
   FRIDA_SESSION_DETACH_REASON_APPLICATION_REQUESTED = 1,
@@ -50189,15 +50196,15 @@ void frida_session_enable_child_gating_sync (FridaSession * self, GError ** erro
 void frida_session_disable_child_gating (FridaSession * self, GAsyncReadyCallback callback, gpointer user_data);
 void frida_session_disable_child_gating_finish (FridaSession * self, GAsyncResult * result, GError ** error);
 void frida_session_disable_child_gating_sync (FridaSession * self, GError ** error);
-void frida_session_create_script (FridaSession * self, const gchar * name, const gchar * source, GAsyncReadyCallback callback, gpointer user_data);
+void frida_session_create_script (FridaSession * self, const gchar * source, FridaScriptOptions * options, GAsyncReadyCallback callback, gpointer user_data);
 FridaScript * frida_session_create_script_finish (FridaSession * self, GAsyncResult * result, GError ** error);
-FridaScript * frida_session_create_script_sync (FridaSession * self, const gchar * name, const gchar * source, GError ** error);
-void frida_session_create_script_from_bytes (FridaSession * self, GBytes * bytes, GAsyncReadyCallback callback, gpointer user_data);
+FridaScript * frida_session_create_script_sync (FridaSession * self, const gchar * source, FridaScriptOptions * options, GError ** error);
+void frida_session_create_script_from_bytes (FridaSession * self, GBytes * bytes, FridaScriptOptions * options, GAsyncReadyCallback callback, gpointer user_data);
 FridaScript * frida_session_create_script_from_bytes_finish (FridaSession * self, GAsyncResult * result, GError ** error);
-FridaScript * frida_session_create_script_from_bytes_sync (FridaSession * self, GBytes * bytes, GError ** error);
-void frida_session_compile_script (FridaSession * self, const gchar * name, const gchar * source, GAsyncReadyCallback callback, gpointer user_data);
+FridaScript * frida_session_create_script_from_bytes_sync (FridaSession * self, GBytes * bytes, FridaScriptOptions * options, GError ** error);
+void frida_session_compile_script (FridaSession * self, const gchar * source, FridaScriptOptions * options, GAsyncReadyCallback callback, gpointer user_data);
 GBytes * frida_session_compile_script_finish (FridaSession * self, GAsyncResult * result, GError ** error);
-GBytes * frida_session_compile_script_sync (FridaSession * self, const gchar * name, const gchar * source, GError ** error);
+GBytes * frida_session_compile_script_sync (FridaSession * self, const gchar * source, FridaScriptOptions * options, GError ** error);
 void frida_session_enable_debugger (FridaSession * self, guint16 port, GAsyncReadyCallback callback, gpointer user_data);
 void frida_session_enable_debugger_finish (FridaSession * self, GAsyncResult * result, GError ** error);
 void frida_session_enable_debugger_sync (FridaSession * self, guint16 port, GError ** error);
@@ -50224,6 +50231,15 @@ void frida_script_eternalize_sync (FridaScript * self, GError ** error);
 void frida_script_post (FridaScript * self, const gchar * message, GBytes * data, GAsyncReadyCallback callback, gpointer user_data);
 void frida_script_post_finish (FridaScript * self, GAsyncResult * result, GError ** error);
 void frida_script_post_sync (FridaScript * self, const gchar * message, GBytes * data, GError ** error);
+
+/* ScriptOptions */
+FridaScriptOptions * frida_script_options_new (void);
+
+const gchar * frida_script_options_get_name (FridaScriptOptions * self);
+FridaScriptRuntime frida_script_options_get_runtime (FridaScriptOptions * self);
+
+void frida_script_options_set_name (FridaScriptOptions * self, const gchar * value);
+void frida_script_options_set_runtime (FridaScriptOptions * self, FridaScriptRuntime value);
 
 /* Injector */
 FridaInjector * frida_injector_new (void);
@@ -50279,6 +50295,7 @@ typedef enum {
 /* GTypes */
 GType frida_device_type_get_type (void) G_GNUC_CONST;
 GType frida_child_origin_get_type (void) G_GNUC_CONST;
+GType frida_script_runtime_get_type (void) G_GNUC_CONST;
 GType frida_session_detach_reason_get_type (void) G_GNUC_CONST;
 GType frida_stdio_get_type (void) G_GNUC_CONST;
 GType frida_unload_policy_get_type (void) G_GNUC_CONST;
@@ -50298,6 +50315,7 @@ GType frida_crash_get_type (void) G_GNUC_CONST;
 GType frida_icon_get_type (void) G_GNUC_CONST;
 GType frida_session_get_type (void) G_GNUC_CONST;
 GType frida_script_get_type (void) G_GNUC_CONST;
+GType frida_script_options_get_type (void) G_GNUC_CONST;
 GType frida_injector_get_type (void) G_GNUC_CONST;
 GType frida_file_monitor_get_type (void) G_GNUC_CONST;
 
@@ -50305,6 +50323,8 @@ GType frida_file_monitor_get_type (void) G_GNUC_CONST;
 #define FRIDA_TYPE_DEVICE_TYPE (frida_device_type_get_type ())
 
 #define FRIDA_TYPE_CHILD_ORIGIN (frida_child_origin_get_type ())
+
+#define FRIDA_TYPE_SCRIPT_RUNTIME (frida_script_runtime_get_type ())
 
 #define FRIDA_TYPE_SESSION_DETACH_REASON (frida_session_detach_reason_get_type ())
 
@@ -50375,6 +50395,10 @@ GType frida_file_monitor_get_type (void) G_GNUC_CONST;
 #define FRIDA_TYPE_SCRIPT (frida_script_get_type ())
 #define FRIDA_SCRIPT(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FRIDA_TYPE_SCRIPT, FridaScript))
 #define FRIDA_IS_SCRIPT(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), FRIDA_TYPE_SCRIPT))
+
+#define FRIDA_TYPE_SCRIPT_OPTIONS (frida_script_options_get_type ())
+#define FRIDA_SCRIPT_OPTIONS(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FRIDA_TYPE_SCRIPT_OPTIONS, FridaScriptOptions))
+#define FRIDA_IS_SCRIPT_OPTIONS(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), FRIDA_TYPE_SCRIPT_OPTIONS))
 
 #define FRIDA_TYPE_INJECTOR (frida_injector_get_type ())
 #define FRIDA_INJECTOR(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FRIDA_TYPE_INJECTOR, FridaInjector))

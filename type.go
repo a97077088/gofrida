@@ -39,6 +39,7 @@ type GClosureNotify=C.GClosureNotify
 type GConnectFlags=C.GConnectFlags
 type GDestroyNotify=C.GDestroyNotify
 type wstring=string
+type FridaScriptRuntime=C.FridaScriptRuntime
 
 type CObj interface{
 	CPtr()uintptr
