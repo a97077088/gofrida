@@ -87,7 +87,6 @@ func (this* FridaScript)RpcCall(_fname string,args []interface{})(interface{},er
 	if err!=nil{
 		return nil,err
 	}
-	fmt.Println(string(bt))
 	var gerr *GError
 	frida_script_post_sync(this,string(bt),0,&gerr)
 	if gerr!=nil{
