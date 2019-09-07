@@ -22,7 +22,7 @@ func (this *FridaDeviceManager) CPtr() uintptr {
 }
 
 func (this *FridaDeviceManager) Close() {
-	frida_device_manager_close_sync(this)
+	frida_device_manager_close_sync(this, nil, nil)
 	frida_unref(this.CPtr())
 }
 
@@ -37,7 +37,7 @@ func (this *FridaDeviceManager) GetDevice_with_id_milltimeout(_id string, _millt
 
 func (this *FridaDeviceManager) EnumDevice() ([]*FridaDevice, error) {
 	var gerr *GError
-	devices := frida_device_manager_enumerate_devices_sync(this, &gerr)
+	devices := frida_device_manager_enumerate_devices_sync(this, nil, &gerr)
 	if gerr != nil {
 		return nil, errors.New(gerr.Message())
 	}
