@@ -75,6 +75,15 @@ func (this *FridaDeviceManager) GetUsbDevice() (*FridaDevice, error) {
 	return r, nil
 }
 
+func (this *FridaDeviceManager) AddDeviceId(host string)error{
+	var gerr *GError
+	frida_device_manager_add_remote_device_sync(this,host,nil,&gerr)
+	if gerr != nil {
+		return errors.New(gerr.Message())
+	}
+	return nil
+}
+
 //直接初始化devicemanager 好像没必要释放他
 func init() {
 	frida_init()

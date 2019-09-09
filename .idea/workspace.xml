@@ -3,9 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="4a8c02f6-f971-4b4c-b455-2c22d48728a2" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cldef.go" beforeDir="false" afterPath="$PROJECT_DIR$/cldef.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frida-core.h" beforeDir="false" afterPath="$PROJECT_DIR$/frida-core.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FridaDeviceManager.go" beforeDir="false" afterPath="$PROJECT_DIR$/FridaDeviceManager.go" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -164,7 +162,9 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
           </value>
         </entry>
       </map>
@@ -172,7 +172,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="update" />
-    <option name="LAST_COMMIT_MESSAGE" value="update" />
+    <MESSAGE value="update 12.6.23" />
+    <option name="LAST_COMMIT_MESSAGE" value="update 12.6.23" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
