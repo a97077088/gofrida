@@ -314,16 +314,6 @@ func (this* FridaProcessList)CPtr()uintptr{
 }
 
 
-type FridaSpawnOptions struct{
-	ptr uintptr
-}
-func FridaSpawnOptionsFormPtr(_ptr uintptr)*FridaSpawnOptions{
-	return &FridaSpawnOptions{_ptr}
-}
-func (this* FridaSpawnOptions)CPtr()uintptr{
-	return this.ptr
-}
-
 type FridaSpawnList struct{
 	ptr uintptr
 }

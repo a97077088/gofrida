@@ -1,8 +1,10 @@
 package gofrida
 
-import "C"
+
 import (
 	"errors"
+	"strings"
+	"time"
 )
 
 const (
@@ -37,9 +39,9 @@ func (this *FridaDevice) Get_Application_with_Identifier(_Identifier string) (*F
 	}
 	return nil, errors.New("找不到这个application")
 }
-func (this *FridaDevice) Get_Process_with_name(_name string) (*FridaProcess, error) {
+func (this *FridaDevice) Get_Process_with_name(_name string,timeout time.Duration) (*FridaProcess, error) {
 	var gerr *GError
-	p := frida_device_get_process_by_name_sync(this, _name, 1000, nil, &gerr)
+	p := frida_device_get_process_by_name_sync(this, _name, int(timeout.Milliseconds()), nil, &gerr)
 	if gerr != nil {
 		return nil, errors.New(gerr.Message())
 	}
@@ -48,7 +50,7 @@ func (this *FridaDevice) Get_Process_with_name(_name string) (*FridaProcess, err
 }
 
 func (this *FridaDevice) Kill_with_name(_name string) error {
-	p, err := this.Get_Process_with_name(_name)
+	p, err := this.Get_Process_with_name(_name,time.Second*1)
 	if err != nil {
 		return err
 	}
@@ -138,7 +140,56 @@ func (this *FridaDevice) Attach(_pid int) (*FridaSession, error) {
 func (this *FridaDevice) Spawn(_cmd string) (int, error) {
 	options := FridaSpawnOptions{}
 	var gerr *GError
+
 	pid := frida_device_spawn_sync(this, _cmd, &options, nil, &gerr)
+	if gerr != nil {
+		return 0, errors.New(gerr.Message())
+	}
+	return pid, nil
+}
+
+//需要有/usr/bin/launchapp 支持,ios
+func (this *FridaDevice) Launchapp(pk string,label string,_args []string,timeout time.Duration)(int, error){
+	newarg:=make([]string,0)
+	newarg=append(newarg,pk)
+	newarg=append(newarg,_args...)
+	exec:="/usr/bin/launchapp"
+	pid,err:=this.Spawn_args(exec,newarg)
+	if err != nil {
+		return 0,err
+	}
+	err=this.Resume(pid)
+	if err != nil {
+		return 0,err
+	}
+	t:=time.Now()
+	for{
+		dp,err:=this.Get_Process_with_name(label,time.Second*1)
+		if err!=nil{
+			if err.Error()!="Process not found"&&strings.Index(err.Error(),"Unable to find process")==-1{
+				return 0,err
+			}
+		}else{
+			return dp.Pid,nil
+		}
+		if time.Since(t)>timeout{
+			return 0,errors.New("找不到这个pid，超时")
+		}
+		time.Sleep(time.Second*1)
+	}
+	return 0,errors.New("致命错误")
+}
+
+//启动一个停止的app
+func (this *FridaDevice) Spawn_args(_path string,_args []string) (int, error) {
+	options := frida_spawn_options_new()
+	zarg:=make([]string,0)
+	zarg=append(zarg,_path)
+	zarg=append(zarg,_args...)
+	options.Set_argv(zarg)
+	var gerr *GError
+
+	pid := frida_device_spawn_sync(this, _path, options, nil, &gerr)
 	if gerr != nil {
 		return 0, errors.New(gerr.Message())
 	}
