@@ -3,6 +3,9 @@ package gofrida
 import "C"
 import (
 	"errors"
+	"fmt"
+	"strconv"
+	"strings"
 )
 
 type FridaDeviceManager struct {
@@ -24,6 +27,56 @@ func (this *FridaDeviceManager) CPtr() uintptr {
 func (this *FridaDeviceManager) Close() {
 	frida_device_manager_close_sync(this, nil, nil)
 	frida_unref(this.CPtr())
+}
+
+//检测id类型是不是网络
+func IsNetIp(_id string)bool{
+	pr:=strings.Split(_id,".")
+	if len(pr)!=4{
+		return false
+	}
+	for _,p:=range pr{
+		_,err:=strconv.Atoi(p)
+		if err!=nil{
+			return false
+		}
+	}
+	return true
+}
+//解析地址
+func ParseNetDeviceIdAddr(_id string)(string,int,error){
+	var err error
+	port:=27042
+	pr:=strings.Split(_id,":")
+	if len(pr)>1{
+		port,err=strconv.Atoi(pr[1])
+		if err != nil {
+			return "",0, err
+		}
+	}
+	if IsNetIp(pr[0])==false{
+		return "",0,errors.New("解析ip失败")
+	}
+	return pr[0],port,nil
+}
+
+func (this *FridaDeviceManager) GetNetDevice_with_id_milltimeout(_id string, _milltimeout int) (*FridaDevice, error) {
+	var gerr *GError
+	var err error
+	addr,port,err:=ParseNetDeviceIdAddr(_id)
+	if err != nil {
+		return nil,err
+	}
+
+	err = this.AddDeviceId(fmt.Sprintf("%s:%d", addr, port))
+	if err != nil {
+		return nil,err
+	}
+	d := frida_device_manager_get_device_by_id_sync(this, fmt.Sprintf("tcp@%s:%d", addr,port), _milltimeout, nil, &gerr)
+	if gerr != nil {
+		return nil, errors.New(gerr.Message())
+	}
+	return d, nil
 }
 
 func (this *FridaDeviceManager) GetDevice_with_id_milltimeout(_id string, _milltimeout int) (*FridaDevice, error) {
