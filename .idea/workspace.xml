@@ -3,7 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="4a8c02f6-f971-4b4c-b455-2c22d48728a2" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/FridaDeviceManager.go" beforeDir="false" afterPath="$PROJECT_DIR$/FridaDeviceManager.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fridatask.go" beforeDir="false" afterPath="$PROJECT_DIR$/fridatask.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -62,11 +63,6 @@
   <component name="GOROOT" path="C:\Go" />
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
-  </component>
-  <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="510" />
-    <option name="width" value="1652" />
-    <option name="height" value="1102" />
   </component>
   <component name="ProjectId" id="1QW0X9497huasRROX3K4Cd6AXub" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
